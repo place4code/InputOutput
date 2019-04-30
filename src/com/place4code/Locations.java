@@ -13,9 +13,13 @@ public class Locations implements Map<Integer, Location> {
 
     public static void main(String[] args) throws IOException {
 
-        try(FileWriter localFile = new FileWriter("locations.txt")) {
+        try(FileWriter localFile = new FileWriter("locations.txt");
+            FileWriter directions = new FileWriter("directions.txt")) {
             for (Location location : locations.values()) {
                 localFile.write(location.getLocationID() + "," + location.getDescription() + "\n");
+                for (String direction : location.getExits().keySet()) {
+                    directions.write(location.getLocationID() + "," + direction + "," + location.getExits().get(direction) + "\n");
+                }
             }
         } // AutoCloseable
 
