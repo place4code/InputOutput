@@ -56,11 +56,20 @@ public class Locations implements Map<Integer, Location> {
 
             while (scanner.hasNextLine()) {
 
+                /*
                 int loc = scanner.nextInt();    //location ID
                 scanner.skip(scanner.delimiter());
                 String direction = scanner.next();  //direction
                 scanner.skip(scanner.delimiter());
                 int destination = Integer.parseInt(scanner.nextLine()); //destination
+                */
+
+                //this time with String.split()
+                String[] data = scanner.nextLine().split(",");
+                int loc = Integer.parseInt(data[0]);
+                String direction = data[1];
+                int destination = Integer.parseInt(data[2]);
+
                 //System.out.println(loc + "," + direction + "," + destination);
                 //add exit to location:
                 locations.get(loc).addExit(direction, destination);
