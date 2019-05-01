@@ -1,15 +1,13 @@
 package com.place4code;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locations = new HashMap<Integer, Location>();
 
+
+    /* write data from java class to file:
 
     public static void main(String[] args) throws IOException {
 
@@ -25,7 +23,55 @@ public class Locations implements Map<Integer, Location> {
 
     }
 
+    */
+
     static {
+
+        /*
+            read locations from file and save in HashMap
+        */
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new FileReader("locations.txt")).useDelimiter(",");
+            while(scanner.hasNextLine()) {
+                int loc = scanner.nextInt();
+                scanner.skip(scanner.delimiter());
+                String description = scanner.nextLine();
+                //System.out.println(loc + "," + description);
+                locations.put(loc, new Location(loc, description, new HashMap<String, Integer>()));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (scanner != null) scanner.close();
+        }
+
+        /*
+            read exits from file and save in HashMap (BufferedReader)
+        */
+        scanner = null;
+        try {
+            scanner = new Scanner(new BufferedReader(new FileReader("directions.txt")));
+            scanner.useDelimiter(",");
+
+            while (scanner.hasNextLine()) {
+
+                int loc = scanner.nextInt();    //location ID
+                scanner.skip(scanner.delimiter());
+                String direction = scanner.next();  //direction
+                scanner.skip(scanner.delimiter());
+                int destination = Integer.parseInt(scanner.nextLine()); //destination
+                //System.out.println(loc + "," + direction + "," + destination);
+                //add exit to location:
+                locations.get(loc).addExit(direction, destination);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (scanner != null) scanner.close();
+        }
+
+        /*
         Map<String, Integer> tempExit = new HashMap<String, Integer>();
         locations.put(0, new Location(0, "You are sitting in front of a computer learning Java",null));
 
@@ -53,6 +99,7 @@ public class Locations implements Map<Integer, Location> {
         tempExit.put("S", 1);
         tempExit.put("W", 2);
         locations.put(5, new Location(5, "You are in the forest",tempExit));
+        */
 
     }
     @Override
