@@ -12,6 +12,7 @@ public class Locations implements Map<Integer, Location> {
         // DataOutputStream, BufferedOutputStream, FileOutputStream
         // save binary:
 
+        /*
         try(DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
             for (Location location : locations.values()) {
                 outputStream.writeInt(location.getLocationID());
@@ -23,16 +24,52 @@ public class Locations implements Map<Integer, Location> {
                 }
             }
         }
+        */
+
+
+
+
 
     }
 
     static {
 
 
+        try(DataInputStream input = new DataInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
 
-        /*
+            boolean eof = false;
+
+            try {
+                while (!eof) {
+                    Map<String, Integer> exits = new LinkedHashMap<>();
+                    int locID = input.readInt();
+                    String description = input.readUTF();
+                    int numExits = input.readInt();
+                    System.out.println("\t\t" + locID + ", " + description + " exits: " + numExits);
+                    for (int i = 0; i < numExits; i++) {
+                        String direction = input.readUTF();
+                        int destination = input.readInt();
+                        exits.put(direction, destination);
+                        System.out.println("\t" + direction + ", " + destination);
+                    }
+                    locations.put(locID, new Location(locID, description, exits));
+
+                }
+            } catch (EOFException e) {
+                eof = true;
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+       /* *//*
             read locations from file and save in HashMap (BufferedReader)
-        */
+        *//*
         try(Scanner scanner = new Scanner(new BufferedReader(new FileReader("locations_big.txt")))) {
 
             scanner.useDelimiter(",");
@@ -49,9 +86,9 @@ public class Locations implements Map<Integer, Location> {
             e.printStackTrace();
         }
 
-        /*
+        *//*
             read exits from file and save in HashMap (BufferedReader)
-        */
+        *//*
         try(BufferedReader reader = new BufferedReader(new FileReader("directions_big.txt"))) {
             String input;
             while ((input = reader.readLine()) != null) {
@@ -87,7 +124,7 @@ public class Locations implements Map<Integer, Location> {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
     }
