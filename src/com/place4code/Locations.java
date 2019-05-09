@@ -6,8 +6,29 @@ import java.util.*;
 public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locations = new LinkedHashMap<Integer, Location>();
 
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+
+        //###############################################################
+        // DataOutputStream, BufferedOutputStream, FileOutputStream
+        // save binary:
+
+        try(DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+            for (Location location : locations.values()) {
+                outputStream.writeInt(location.getLocationID());
+                outputStream.writeUTF(location.getDescription());
+                outputStream.writeInt(location.getExits().size() - 1);
+                for (String direction : location.getExits().keySet()) {
+                    outputStream.writeUTF(direction);
+                    outputStream.writeInt(location.getExits().get(direction));
+                }
+            }
+        }
+
+    }
 
     static {
+
+
 
         /*
             read locations from file and save in HashMap (BufferedReader)
@@ -67,7 +88,6 @@ public class Locations implements Map<Integer, Location> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
     }
