@@ -1,5 +1,7 @@
 package com.place4code;
 
+import com.sun.corba.se.impl.io.IIOPInputStream;
+
 import java.io.*;
 import java.util.*;
 
@@ -8,65 +10,31 @@ public class Locations implements Map<Integer, Location> {
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
 
-
-
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
+            int count = 0;
+            for (Location location : locations.values()) {
+                outputStream.writeObject(location);
+                count++;
+            }
+            System.out.println("I wrote " + count + " locations");
+        }
 
     }
 
     static {
 
+        try(ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
 
+            boolean end = false;
+            while (!end) {
 
-         //   read locations from file and save in HashMap (BufferedReader)
-
-        try(Scanner scanner = new Scanner(new BufferedReader(new FileReader("locations_big.txt")))) {
-
-            scanner.useDelimiter(",");
-
-            while(scanner.hasNextLine()) {
-
-                int loc = scanner.nextInt();
-                scanner.skip(scanner.delimiter());
-                String description = scanner.nextLine();
-
-                locations.put(loc, new Location(loc, description, new LinkedHashMap<String, Integer>()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-         //   read exits from file and save in HashMap (BufferedReader)
-
-        try(BufferedReader reader = new BufferedReader(new FileReader("directions_big.txt"))) {
-            String input;
-            while ((input = reader.readLine()) != null) {
-
-                String[] data = input.split(",");
-                int loc = Integer.parseInt(data[0]);
-                String direction = data[1];
-                int destination = Integer.parseInt(data[2]);
-
-                //add exit to location:
-                locations.get(loc).addExit(direction, destination);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //copy to file
-
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter("locations.txt"));
-            BufferedWriter writerDirections = new BufferedWriter(new FileWriter("directions.txt"))) {
-
-            for (Location location : locations.values()) {
-                writer.write(location.getLocationID() + "," + location.getDescription() + "\n");
-
-                for (String direction : location.getExits().keySet()) {
-                    if (!direction.equalsIgnoreCase("Q")) {
-                        writerDirections.write(location.getLocationID() + "," + direction + "," + location.getExits().get(direction) + "\n");
-                    }
+                try {
+                    Location location = (Location) inputStream.readObject();
+                    locations.put(location.getLocationID(), location);
+                } catch (EOFException e) {
+                    end = true;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
 
             }
